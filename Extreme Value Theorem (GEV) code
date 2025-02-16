@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import genextreme as gev
+
+# Given swim times data (excluding index 1 for the fitting)
+swim_times = np.array([46.8, 46.86, 46.88, 46.91, 46.92, 46.94, 46.96, 46.97, 46.97, 
+                       46.98, 47.02, 47.04, 47.05, 47.06, 47.07, 47.08, 47.08, 47.08, 
+                       47.09, 47.1, 47.11, 47.12, 47.13, 47.17, 47.2, 47.2, 47.21, 
+                       47.23, 47.24, 47.25, 47.26, 47.26, 47.27, 47.27, 47.3, 47.31, 
+                       47.32, 47.32, 47.33, 47.35, 47.35, 47.36, 47.37, 47.37, 47.37, 
+                       47.39, 47.39, 47.39, 47.43])
+
+# Fit the GEV distribution to the data
+shape, loc, scale = gev.fit(swim_times)
+
+# Swim time at index 1
+swim_time_index_1 = 46.4
+
+# Generate a range of swim times for plotting
+x_values = np.linspace(min(swim_times), max(swim_times), 100)
+y_values = gev.pdf(x_values, shape, loc=loc, scale=scale)
+
+# Calculate the probability of observing a swim time <= 46.4 using the CDF of the GEV distribution
+probability = gev.cdf(swim_time_index_1, shape, loc=loc, scale=scale)
+
+# Print the probability
+print(f"Probability of swim time <= {swim_time_index_1}: {probability:.6f}")
+print("Mean:", np.mean(swim_times))
+print("Std:", np.std(swim_times))
+print(shape, loc, scale)
+
+# Create the plot
+plt.figure(figsize=(10, 6))
+
+# Plot the fitted GEV distribution
+plt.plot(x_values, y_values, label="Fitted GEV Distribution", color="blue")
+
+# Plot the actual swim times (excluding index 1)
+plt.scatter(swim_times, gev.pdf(swim_times, shape, loc=loc, scale=scale), color="red", label="Swim Times")
+
+# Highlight the swim time at index 1
+plt.axvline(x=swim_time_index_1, color='green', linestyle='--', label=f"Swim Time (Index 1): {swim_time_index_1}")
+
+# Adding labels and legend
+plt.title("Fitted GEV Distribution and Swim Times")
+plt.xlabel("Swim Time (seconds)")
+plt.ylabel("Probability Density")
+plt.legend()
+
+# Show the plot
+plt.grid(True)
+plt.show()
